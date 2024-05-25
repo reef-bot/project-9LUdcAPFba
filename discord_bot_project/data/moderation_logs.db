@@ -1,0 +1,43 @@
+# discord_bot_project/data/moderation_logs.db
+
+# Complete code for the moderation_logs.db file
+# This file will be used to log moderation actions for transparency
+
+import sqlite3
+
+# Create a connection to the database
+conn = sqlite3.connect('moderation_logs.db')
+cursor = conn.cursor()
+
+# Create a table to store moderation logs
+cursor.execute('''CREATE TABLE IF NOT EXISTS moderation_logs (
+                    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    action TEXT NOT NULL,
+                    user_id INTEGER NOT NULL,
+                    reason TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )''')
+
+# Function to insert a new moderation log entry
+def insert_moderation_log(action, user_id, reason):
+    cursor.execute('''INSERT INTO moderation_logs (action, user_id, reason) 
+                      VALUES (?, ?, ?)''', (action, user_id, reason))
+    conn.commit()
+
+# Function to retrieve all moderation logs
+def get_all_moderation_logs():
+    cursor.execute('''SELECT * FROM moderation_logs''')
+    return cursor.fetchall()
+
+# Function to retrieve moderation logs by user_id
+def get_moderation_logs_by_user(user_id):
+    cursor.execute('''SELECT * FROM moderation_logs WHERE user_id = ?''', (user_id,))
+    return cursor.fetchall()
+
+# Function to delete all moderation logs
+def delete_all_moderation_logs():
+    cursor.execute('''DELETE FROM moderation_logs''')
+    conn.commit()
+
+# Close the connection to the database
+conn.close()
